@@ -1,0 +1,284 @@
+{
+  "name": "Daily Report",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Create an email content by considering the below (remove the additional content and give a gentle reminder if the task was completed; appreciate them if it was completed; if it was not completed, remind them to complete it):\n\n\nDear {{ $json['Team Member'] }}, \nCompleted Tasks {{ $json['Completed Tasks'] }}, \nBlocked Tasks {{ $json['Blocked Tasks'] }},\nPlanned tasks {{ $json['Planned Tasks'] }},\nNotes {{ $json.Notes }}\n\nThank you! Good day...",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        600,
+        0
+      ],
+      "id": "c6b39707-e146-46c2-9dd9-5e80658edf69",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        640,
+        220
+      ],
+      "id": "c7485cea-c75c-4a51-9725-752316de0855",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "OI5DMKlg9VEUioos",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        960,
+        0
+      ],
+      "id": "6286c099-f497-4f1d-ab1d-aba37e915053",
+      "name": "Gmail",
+      "webhookId": "a4021ea2-d8e4-4a4e-922e-a64fcd2261e2",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "DsW6nBynF0u42ZMr",
+          "name": "Gmail account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "Google sheet and gmail",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1200,
+        20
+      ],
+      "id": "44f59341-f5bb-44de-9275-e7025e82a5e2",
+      "name": "Merge",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json['Email Id'] }}",
+        "subject": "Daily Summery Report ",
+        "emailType": "text",
+        "message": "Dear Sir/Madam,\nComplete the task before the deadline\n\nTeam Member: Sowmiya\n- Completed: Finished report draft, updated docs\n- Blocked: Waiting for review\n- Planned: Finalize report, send to client \n\nTeam Member: dharshini\n- Completed: Fixed bug #123, pushed to staging\n- Blocked: API endpoint issues\n- Planned: Test API fix, integrate feature \n\nTeam Member: stephy\n- Completed: Onboarded new team member\n- Blocked: None\n- Planned: Prepare training slides \n\nTeam Member: karthi\n- Completed: Reviewed PRs, updated deployment scripts\n- Blocked: Awaiting deployment approval\n- Planned: Deploy updates, monitor logs \n\nThank you..!",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1860,
+        20
+      ],
+      "id": "8f257920-0905-4ac9-b9e1-8db45897c8c6",
+      "name": "Gmail1",
+      "webhookId": "10b56b82-7108-41a8-96f4-aa5939285008",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "DsW6nBynF0u42ZMr",
+          "name": "Gmail account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Sample input data\nconst inputData = [\n  {\n    \"Team Member\": \"sowmiya\",\n    \"Completed Tasks\": \"Finished report draft, updated docs\",\n    \"Blocked Tasks\": \"Waiting for review\",\n    \"Planned Tasks\": \"Finalize report, send to client\",\n    \"Notes\": \"Needs quick review\"\n  },\n  {\n    \"Team Member\": \"Dharshini\",\n    \"Completed Tasks\": \"Fixed bug #123, pushed to staging\",\n    \"Blocked Tasks\": \"API endpoint issues\",\n    \"Planned Tasks\": \"Test API fix, integrate feature\",\n    \"Notes\": \"Might need API support\"\n  },\n  {\n    \"Team Member\": \"stephy\",\n    \"Completed Tasks\": \"Onboarded new team member\",\n    \"Blocked Tasks\": \"None\",\n    \"Planned Tasks\": \"Prepare training slides\",\n    \"Notes\": \"Training session tomorrow\"\n  },\n  {\n    \"Team Member\": \"karthi\",\n    \"Completed Tasks\": \"Reviewed PRs, updated deployment scripts\",\n    \"Blocked Tasks\": \"Awaiting deployment approval\",\n    \"Planned Tasks\": \"Deploy updates, monitor logs\",\n    \"Notes\": \"Deployment planned for tomorrow\"\n  }\n];\n\n// Initialize summary object\nconst summary = {\n  Completed: [],\n  Blocked: [],\n  Planned: [],\n  Notes: []\n};\n\n// Process each team member's updates\nfor (const update of inputData) {\n  const teamMember = update[\"Team Member\"] || \"Unknown\";\n  const completed = (update[\"Completed Tasks\"] || \"\").trim();\n  const blocked = (update[\"Blocked Tasks\"] || \"\").trim();\n  const planned = (update[\"Planned Tasks\"] || \"\").trim();\n  const notes = (update[\"Notes\"] || \"\").trim();\n  \n  if (completed && completed.toLowerCase() !== \"none\") {\n    summary.Completed.push(`- ${teamMember}: ${completed}`);\n  }\n  \n  if (blocked && blocked.toLowerCase() !== \"none\") {\n    summary.Blocked.push(`- ${teamMember}: ${blocked}`);\n  }\n  \n  if (planned && planned.toLowerCase() !== \"none\") {\n    summary.Planned.push(`- ${teamMember}: ${planned}`);\n  }\n  \n  if (notes && notes.toLowerCase() !== \"none\") {\n    summary.Notes.push(`- ${teamMember}: ${notes}`);\n  }\n}\n\n// Build the final formatted summary\nconst todayDate = new Date().toISOString().split(\"T\")[0];\nconst formattedSummary = \n`Daily Summary for ${todayDate}\n\nCompleted:\n${summary.Completed.join('\\n') || \"No updates\"}\n\nBlocked:\n${summary.Blocked.join('\\n') || \"No blockers\"}\n\nPlanned for Tomorrow:\n${summary.Planned.join('\\n') || \"No plans\"}\n\nAdditional Notes:\n${summary.Notes.join('\\n') || \"No notes\"}\n`;\n\n// Return formatted summary for n8n’s expected output\nreturn [\n  {\n    json: {\n      summary: formattedSummary\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        20
+      ],
+      "id": "c8cc9903-2e2c-4247-b97e-47d69a3d2a4a",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1erkDUdhsFu-APl4-SyeFz4BgqBvsMLnUpti1S6lR-kM",
+          "mode": "list",
+          "cachedResultName": "Daily Workflow",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1erkDUdhsFu-APl4-SyeFz4BgqBvsMLnUpti1S6lR-kM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1erkDUdhsFu-APl4-SyeFz4BgqBvsMLnUpti1S6lR-kM/edit#gid=0"
+        },
+        "includeInOutput": "both",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        300,
+        0
+      ],
+      "id": "0a9b83b9-ac6f-4b6f-bed4-a585e78c0496",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "sgVeL1CgNeDBUXq7",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1_LpGrL-Er1z3eiBM-G9LsPDiouWhawTUXYUt0yk18NM",
+          "mode": "list",
+          "cachedResultName": "Mail Id",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_LpGrL-Er1z3eiBM-G9LsPDiouWhawTUXYUt0yk18NM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_LpGrL-Er1z3eiBM-G9LsPDiouWhawTUXYUt0yk18NM/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1660,
+        20
+      ],
+      "id": "1ca0ef10-0dae-4379-9517-6751b3768def",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "LkOJuL4YugNoYkHs",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail1": {
+      "main": [
+        []
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3084b8b8-5b1b-4080-9afa-37b6e6c623dd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bc54b08bda7065b7b7532ff1c538ec392d59a3234e5b549eabfba3042503cf96"
+  },
+  "id": "tMltbvbf3W4jyd6T",
+  "tags": []
+}

@@ -1,0 +1,456 @@
+{
+  "name": "Hackathon",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -280,
+        0
+      ],
+      "id": "7ea675de-e648-4940-8ef6-a4f234a4f0ce",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1FzkeGqLmKARYIwsgPqR-C9gOVoLwiPps2idySpUY9p4",
+          "mode": "list",
+          "cachedResultName": "Placement Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FzkeGqLmKARYIwsgPqR-C9gOVoLwiPps2idySpUY9p4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FzkeGqLmKARYIwsgPqR-C9gOVoLwiPps2idySpUY9p4/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -60,
+        0
+      ],
+      "id": "48d49e78-0574-4d6d-94d2-4a24cbd4437f",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "78yqjHpexFUCy9o2",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "base",
+        "operation": "getSchema",
+        "base": {
+          "__rl": true,
+          "value": "app41T1RcuKVrdkS2",
+          "mode": "list",
+          "cachedResultName": "Placement",
+          "cachedResultUrl": "https://airtable.com/app41T1RcuKVrdkS2"
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        200,
+        0
+      ],
+      "id": "a27482fa-097d-4965-a970-b5e631dc22a4",
+      "name": "Airtable",
+      "alwaysOutputData": true,
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "AFmCgLsn5M7DYsIi",
+          "name": "Airtable Personal Access Token account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "database",
+        "operation": "getAll",
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        400
+      ],
+      "id": "14c3227f-b049-4f1a-91a9-3dfdadf61812",
+      "name": "Notion",
+      "alwaysOutputData": true,
+      "credentials": {
+        "notionApi": {
+          "id": "YW1gmNGmCU4xRzAK",
+          "name": "Notion account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const rawDate = $('Google Sheets').first().json['ID'];\n  const parsedDate = new Date(rawDate);\n\n  return {\n    json: {\n      ...item.json,\n      joined_on: isNaN(parsedDate) ? null : parsedDate.toISOString()\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        -220
+      ],
+      "id": "d3129b00-4d1e-470f-a028-0d07eb1edbce",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1FzkeGqLmKARYIwsgPqR-C9gOVoLwiPps2idySpUY9p4/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FzkeGqLmKARYIwsgPqR-C9gOVoLwiPps2idySpUY9p4/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        920,
+        0
+      ],
+      "id": "0f31dc32-251d-419e-b1d8-e405ea03804b",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "78yqjHpexFUCy9o2",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "fileId": {
+          "__rl": true,
+          "value": "1FzkeGqLmKARYIwsgPqR-C9gOVoLwiPps2idySpUY9p4",
+          "mode": "list",
+          "cachedResultName": "Placement Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FzkeGqLmKARYIwsgPqR-C9gOVoLwiPps2idySpUY9p4/edit?usp=drivesdk"
+        },
+        "newUpdatedFileName": "Placement 1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1140,
+        0
+      ],
+      "id": "82105dd5-a935-4f15-96d3-8ff149e17273",
+      "name": "Google Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "anOSUUl99jYrxnGi",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Google Sheets1').item.json['Email'] }}",
+        "subject": "Monthly Report",
+        "emailType": "text",
+        "message": "=Hi Team,\n\nThe monthly unified data report has been generated.\n\nID: {{ $('Google Sheets1').item.json['ID'] }} \nName: {{ $('Google Sheets1').item.json['Name'] }}\nDepartment: {{ $('Google Sheets1').item.json['Department'] }}\nJoined Date: {{ $('Google Sheets1').item.json['Joined_On'] }}\nSources:  {{ $('Google Sheets1').item.json['Source'] }} \n\nRegards,  \nn8n Bot\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1360,
+        0
+      ],
+      "id": "42000609-080f-4dbb-ab33-49b5f97b9bfc",
+      "name": "Gmail",
+      "webhookId": "f8935251-2f1a-4ad9-883e-7e39e3c345d9",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "8dbvoq8jMLDQZTN7",
+          "name": "Gmail account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1FzkeGqLmKARYIwsgPqR-C9gOVoLwiPps2idySpUY9p4",
+          "mode": "list",
+          "cachedResultName": "Placement 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FzkeGqLmKARYIwsgPqR-C9gOVoLwiPps2idySpUY9p4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1094353159,
+          "mode": "list",
+          "cachedResultName": "n8n-sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FzkeGqLmKARYIwsgPqR-C9gOVoLwiPps2idySpUY9p4/edit#gid=1094353159"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "threadId",
+              "displayName": "threadId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "labelIds",
+              "displayName": "labelIds",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1580,
+        0
+      ],
+      "id": "7a0af22f-0a39-4d6c-a802-cc4e297e0180",
+      "name": "Google Sheets2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gWtiDQ9Yfi0Ze0Lp",
+          "name": "Google Sheets account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "ID, Name",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        620,
+        -220
+      ],
+      "id": "e5be7e93-3930-40ea-b499-5cb9028db1c0",
+      "name": "Merge",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Cleans, merges, and joins datasets by common ID.\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        480,
+        80
+      ],
+      "id": "1e8122fb-3046-46d3-b518-94c9c9e91368",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        520,
+        300
+      ],
+      "id": "15e9bc19-d2ef-4ba5-bc54-403399455134",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "uBPnzvksWNNP7mdK",
+          "name": "Google Gemini(PaLM) Api account 3"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Airtable": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notion": {
+      "main": [
+        []
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        []
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d303a227-16e2-4d51-b2a4-1970879c426c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bc54b08bda7065b7b7532ff1c538ec392d59a3234e5b549eabfba3042503cf96"
+  },
+  "id": "R9iQJB7BTUv8lIKA",
+  "tags": []
+}
